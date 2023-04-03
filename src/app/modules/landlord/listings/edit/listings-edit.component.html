@@ -1,0 +1,207 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+  <!-- Header -->
+  <div
+      class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+      <div class="flex-1 min-w-0">
+          <!-- Breadcrumbs -->
+          <div class="flex flex-wrap items-center font-medium">
+              <div>
+                  <a class="whitespace-nowrap text-primary-500" routerLink="/p/list">Properties</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                  <a class="whitespace-nowrap text-primary-500" routerLink="/p/{{property?.id}}">{{ property?.name }}</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                  <a class="ml-1 text-primary-500">Edit {{ listing?.roomTypeDTO.name }}</a>
+              </div>
+          </div>
+          <!-- Title and action buttons -->
+          <div class="flex items-center justify-between w-full">
+            <div class="mt-2">
+                <h2 class="text-3xl font-semibold tracking-tight leading-8">Edit {{ listing?.roomTypeDTO.name }}</h2>
+            </div>
+            <div class="flex items-center ml-6">
+                <button
+                    class="hidden sm:inline-flex ml-3"
+                    routerLink="/l/{{listingId}}/rent"
+                    mat-stroked-button>
+                    <mat-icon
+                        class="icon-size-5"
+                        [svgIcon]="'heroicons_solid:currency-dollar'"></mat-icon>
+                    <span class="ml-2">Rent</span>
+                </button>
+                <button
+                    class="hidden sm:inline-flex ml-3"
+                    routerLink="/l/{{listingId}}/photos"
+                    mat-flat-button
+                    [color]="'primary'">
+                    <mat-icon
+                        class="icon-size-5"
+                        [svgIcon]="'heroicons_solid:photograph'"></mat-icon>
+                    <span class="ml-2">Photos</span>
+                </button>
+
+                <!-- Actions menu (visible on xs) -->
+                <div class="sm:hidden">
+                  <button
+                      [matMenuTriggerFor]="actionsMenu"
+                      mat-icon-button>
+                      <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+                  </button>
+                  <mat-menu #actionsMenu="matMenu">
+                      <button mat-menu-item routerLink="/l/{{listingId}}/rent">Rent</button>
+                      <button mat-menu-item routerLink="/l/{{listingId}}/photos">Photos</button>
+                  </mat-menu>
+                </div>
+            </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-auto p-6 sm:p-10">
+
+      <div class="max-w-3xl">
+
+          <!-- Alert -->
+          <fuse-alert class="mt-8 -mb-4" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false"
+              [type]="alert.type" [@shake]="alert.type === 'error'">
+              {{alert.message}}
+          </fuse-alert>
+
+            <!-- Listing detail -->
+            <form #listingDetails="ngForm" (ngSubmit)="onSubmit(listingDetails)">
+
+              <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                  <!-- Bedrooms -->
+                  <div class="flex">
+                      <mat-form-field class="w-full">
+                          <mat-label>Bedrooms</mat-label>
+                          <input matInput required disabled
+                            type="number"
+                            name="bedrooms"
+                            [ngModel]="listing?.roomTypeDTO.bedRooms">
+                          <mat-error>
+                              Please type in the number of bedrooms available
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+
+                  <!-- Bathrooms -->
+                  <div class="flex">
+                      <mat-form-field class="w-full">
+                          <mat-label>Bathrooms</mat-label>
+                          <input matInput required
+                            type="number"
+                            name="bathrooms"
+                            [ngModel]="listing?.roomTypeDTO.bathRooms">
+                          <mat-error>
+                              Please type in the number of bathrooms available
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+
+                  <!-- Kitchens -->
+                  <div class="flex">
+                      <mat-form-field class="w-full">
+                          <mat-label>Kitchens</mat-label>
+                          <input matInput required
+                            type="number"
+                            name="kitchens"
+                            [ngModel]="listing?.roomTypeDTO.kitchens">
+                          <mat-error>
+                              Please type in the number of kitchens available
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+
+                  <!-- Total units -->
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>Total units</mat-label>
+                          <input matInput
+                              type="number" 
+                              name="totalUnits" 
+                              [ngModel]="listing?.totalUnits" required
+                              [placeholder]="'Total number of units in property'">
+                          <mat-error>
+                              Enter the total rentable units in the property
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+
+                  <!-- Units available -->
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>Units available</mat-label>
+                          <input matInput 
+                              type="number"
+                              name="unitsAvailable"
+                              [ngModel]="listing?.availableUnits" required
+                              [placeholder]="'Number of units available for people to rent'">
+                          <mat-error>
+                              Enter the units currently available for renting
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+
+                  <!-- Description -->
+                  <div class="flex">
+                      <mat-form-field class="fuse-mat-textarea flex-auto">
+                          <mat-label>Description</mat-label>
+                          <textarea matInput required
+                              [ngModel]="listing?.description"
+                              name="description"
+                              [placeholder]="'You can provide a short description concerning this listing'"
+                              [rows]="3"></textarea>
+                          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                          <mat-error>
+                              Give a short description about this {{ listing?.roomTypeDTO.name }}.
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+
+                  <!-- External features -->
+                  <!-- <div class="flex">
+                    <mat-form-field class="fuse-mat-textarea flex-auto">
+                        <mat-label>External features</mat-label>
+                        <textarea matInput
+                            name="externalFeatures"
+                            [ngModel]="externalFeatures?.name"
+                            [placeholder]="'E.g: Balcony, swimming pool, etc. Seperate the features with a comma(,)'"
+                            [rows]="3">
+                        </textarea>
+                        <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                    </mat-form-field>
+                  </div> -->
+
+                  <!-- Internal features -->
+                  <!-- <div class="flex">
+                      <mat-form-field class="fuse-mat-textarea flex-auto">
+                          <mat-label>Internal features</mat-label>
+                          <textarea matInput
+                              name="internalFeatures"
+                              [ngModel]="internalFeatures?.name"
+                              [placeholder]="'E.g: Hot shower, wifi/ethernet, furniture, etc. Seperate the features with a comma(,)'"
+                              [rows]="3">
+                          </textarea>
+                          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                      </mat-form-field>
+                  </div> -->
+              </div>
+
+              <div class="flex items-center justify-end mt-10">
+                <button class="px-6 ml-3" mat-flat-button type="submit" [color]="'primary'">
+                    Save
+                </button>
+              </div>
+
+          </form>
+
+      </div>
+
+  </div>
+</div>

@@ -1,0 +1,219 @@
+<div class="flex flex-col flex-auto w-full">
+
+  <div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
+
+      <!-- Title and action buttons -->
+      <div class="flex items-center justify-between w-full">
+          <div>
+              <h2 class="text-3xl font-semibold tracking-tight leading-8">{{ listing?.roomTypeDTO.name }} dashboard</h2>
+              <div class="font-medium tracking-tight text-secondary">Keep track of your listing</div>
+          </div>
+          <div class="flex items-center ml-6">
+              <button
+                  class="hidden sm:inline-flex ml-3"
+                  routerLink="/l/{{listingId}}/rent"
+                  mat-stroked-button>
+                  <mat-icon
+                      class="icon-size-5"
+                      [svgIcon]="'heroicons_solid:currency-dollar'"></mat-icon>
+                  <span class="ml-2">Rent</span>
+              </button>
+              <button
+                  class="hidden sm:inline-flex ml-3"
+                  routerLink="/l/{{listingId}}/photos"
+                  mat-flat-button
+                  [color]="'primary'">
+                  <mat-icon
+                      class="icon-size-5"
+                      [svgIcon]="'heroicons_solid:photograph'"></mat-icon>
+                  <span class="ml-2">Photos</span>
+              </button>
+
+              <!-- Actions menu (visible on xs) -->
+              <div class="sm:hidden">
+                <button
+                    [matMenuTriggerFor]="actionsMenu"
+                    mat-icon-button>
+                    <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+                </button>
+                <mat-menu #actionsMenu="matMenu">
+                    <button mat-menu-item routerLink="/l/{{listingId}}/rent">Rent</button>
+                    <button mat-menu-item routerLink="/l/{{listingId}}/photos">Photos</button>
+                </mat-menu>
+              </div>
+          </div>
+      </div>
+
+      <!-- Features -->
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 w-full mt-8">
+
+          <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+            <div class="p-6">
+                <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">External features</div>
+            </div>
+            <div class="mx-6">
+              <div class="flex flex-col">
+                <div class="flex flex-col" *ngFor="let feature of externalFeatures; let i = index">
+                    <mat-checkbox class="mb-2" [color]="'primary'" [ngModel]="true">
+                        {{ feature?.name }}
+                    </mat-checkbox>
+                </div>
+              </div>
+            </div>
+            <div class="p-6">
+                <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Internal features</div>
+            </div>
+            <div class="mx-6">
+              <div class="flex flex-col">
+                <div class="flex flex-col" *ngFor="let feature of internalFeatures; let i = index">
+                    <mat-checkbox class="mb-2" [color]="'primary'" [ngModel]="true">
+                        {{ feature?.name }}
+                    </mat-checkbox>
+                </div>
+              </div>
+              <button class="py-4 mb-6 mt-4" mat-stroked-button>Update features</button>
+            </div>
+          </div>
+      </div>
+
+      <!-- Rent price -->
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 w-full mt-8">
+        <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+          <div class="p-6">
+              <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Rent</div>
+          </div>
+          <div class="mx-6">
+              <div class="flex">
+                <mat-form-field class="flex-auto">
+                    <mat-label>Rent Price</mat-label>
+                    <input matInput type="number" name="exactAmount" [value]="rentalCost?.exactAmount" readonly>
+                </mat-form-field>
+              </div>
+              <div class="flex">
+                  <mat-form-field class="flex-auto">
+                      <mat-label>Minimum Rent Price</mat-label>
+                      <input matInput type="number" name="minAmount" [value]="rentalCost?.minAmount" readonly>
+                  </mat-form-field>
+              </div>
+              <div class="flex">
+                  <mat-form-field class="flex-auto">
+                      <mat-label>Maximum Rent Price</mat-label>
+                      <input matInput type="number" name="maxAmount" [value]="rentalCost?.maxAmount" readonly>
+                  </mat-form-field>
+              </div>
+              <button class="py-4 mb-6 mt-4"
+                routerLink="/l/{{listingId}}/rent"
+                mat-stroked-button>Update rent</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Electricity cost -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 w-full mt-8">
+            <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+                <div class="p-6">
+                    <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Electricity</div>
+                </div>
+                <div class="mx-6">
+                    <form #electricityCost="ngForm" (ngSubmit)="onSubmitElectricityCost(electricityCost)">
+                        <div class="flex">
+                            <mat-form-field class="flex-auto">
+                                <mat-label>Electricity installation type</mat-label>
+                                <mat-select 
+                                    name="electricityInstallationTypeId" 
+                                    [(ngModel)]="selectedElectricityInstallationTypeId" 
+                                    required>
+                                    <mat-option *ngFor="let type of electricityInstallationTypes" [value]="type?.id">
+                                        {{ type.name }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:filter'">
+                                </mat-icon>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex">
+                            <mat-form-field class="flex-auto">
+                                <mat-label>Electricity cost</mat-label>
+                                <input matInput type="number" name="maxAmount" [ngModel]="electricityCost?.fixedAmount">
+                            </mat-form-field>
+                        </div>
+                        <button class="py-4 mb-6 mt-4" type="submit" mat-stroked-button>Update electricity cost</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+      <!-- Water cost -->
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 w-full mt-8">
+        <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+          <div class="p-6">
+              <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Water cost</div>
+          </div>
+          <div class="mx-6">
+            <form #waterCost="ngForm" (ngSubmit)="onSubmitWaterCost(waterCost)">
+                <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Water availability type</mat-label>
+                        <mat-select required
+                            name="waterAvailabilityTypeId"
+                            [(ngModel)]="selectedWaterAvailabilityTypeId">
+                            <mat-option *ngFor="let type of waterAvailabilityTypes" [value]="type?.id">
+                                {{ type.name }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:filter'">
+                        </mat-icon>
+                    </mat-form-field>
+                </div>
+                <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Frequency per month</mat-label>
+                        <input matInput type="number" name="frequencyPerMonth" [ngModel]="waterCost?.frequencyPerMonth">
+                    </mat-form-field>
+                </div>
+                <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Monthly cost of water?</mat-label>
+                        <input matInput type="number" name="fixedAmount" [ngModel]="waterCost?.fixedAmount">
+                    </mat-form-field>
+                </div>
+                <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Price per unit of water</mat-label>
+                        <input matInput type="number" name="pricePerUnit" [ngModel]="waterCost?.pricePerUnit">
+                    </mat-form-field>
+                </div>
+                <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Unit of water in litres</mat-label>
+                        <input matInput type="number" name="unitSizeInLitres" [ngModel]="waterCost?.unitSizeInLitres">>
+                    </mat-form-field>
+                </div>
+                <button class="py-4 mb-6 mt-4" type="submit" mat-stroked-button>Update water cost</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+        <!-- Additional costs -->
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 w-full mt-8">
+        <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+          <div class="p-6">
+              <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Additional costs</div>
+          </div>
+          <div class="mx-6">
+            <div class="flex flex-col">
+              <div class="flex flex-col" *ngFor="let extraCost of additionalCosts; let i = index">
+                  <mat-checkbox class="mb-2" [color]="'primary'" [ngModel]="true">
+                      {{ extraCost?.item }}
+                  </mat-checkbox>
+              </div>
+            </div>
+            <button class="py-4 mb-6 mt-4" mat-stroked-button routerLink="/l/{{listingId}}/additionalcosts">Update addtitional costs</button>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+</div>

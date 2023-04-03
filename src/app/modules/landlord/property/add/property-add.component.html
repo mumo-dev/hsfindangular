@@ -1,0 +1,1053 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <!-- Header -->
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a class="whitespace-nowrap text-primary-500">User Interface</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">Forms</a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Add property
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+
+        <div class="max-w-3xl">
+
+            <!-- Alert -->
+            <fuse-alert class="mt-8 -mb-4" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false"
+                [type]="alert.type" [@shake]="alert.type === 'error'">
+                {{alert.message}}
+            </fuse-alert>
+
+            <!-- Add propery detail -->
+            <form id="propertyDetail" #propertyDetail="ngForm" (ngSubmit)="onSubmitPropertyDetail(propertyDetail)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Basic information</p>
+                    <p class="text-secondary">
+                        What kind of property are you listing?
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Choose a property type</mat-label>
+                            <mat-select name="propertyTypeId" required [(ngModel)]="selectedPropertyTypeId">
+                                <mat-option *ngFor="let propertyType of propertyTypes" [value]="propertyType?.id">
+                                    {{propertyType.name}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:location-marker'">
+                            </mat-icon>
+                            <mat-error>
+                                Please select which property type you have
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Property name</mat-label>
+                            <input matInput name="name" #name ngModel required [placeholder]="'Property Name'">
+                            <mat-error>
+                                Please provide a name for your property
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="fuse-mat-textarea flex-auto">
+                            <mat-label>Provide us with a brief description about your property</mat-label>
+                            <textarea matInput name="description" #description ngModel required
+                                [placeholder]="'A sentence or two to describe the property'" [rows]="3"></textarea>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                            <mat-error>
+                                Please provide a brief description about this property.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button class="px-6 ml-3" mat-flat-button type="submit" [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add general features -->
+            <form id="generalFeatures" #generalFeatures="ngForm" (ngSubmit)="onSubmitFeatures(generalFeatures)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">General features</p>
+                    <p class="text-secondary">
+                        Let's add some features to your property
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex flex-col">
+                        <span class="font-semibold mb-2">Please select features available in your property</span>
+                        <div class="flex flex-col" *ngFor="let feature of features; let i = index">
+                            <mat-checkbox class="mb-2" [value]="feature" [color]="'primary'"
+                                (change)="updateCheckedGeneralFeatures(feature)">
+                                {{ feature }}
+                            </mat-checkbox>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline mt-8">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Is your feature not in the list above?
+                                <span style="color: #007bff;">Add below</span>
+                            </mat-label>
+                            <input matInput [placeholder]="'Feature'" name="customFeature" [(ngModel)]="customFeature">
+                        </mat-form-field>
+                        <button class="px-6 ml-3" mat-flat-button type="button" [color]="'primary'"
+                            (click)="addGeneralFeature()">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('propertyDetail','generalFeatures')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" type="submit" mat-flat-button [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add propery location -->
+            <form id="propertyLocation" #propertyLocation="ngForm" (ngSubmit)="onSubmitPropertyLocation(propertyLocation)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Property location</p>
+                    <p class="text-secondary">
+                        Where is your property?
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>County</mat-label>
+                            <mat-select name="countyId" [(ngModel)]="selectedCountyId" required>
+                                <mat-option *ngFor="let county of counties" [value]="county?.id">
+                                    {{ county.name }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:location-marker'">
+                            </mat-icon>
+                            <mat-error>
+                                Please select the county where this property is located
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Town</mat-label>
+                            <input matInput name="town" ngModel required [placeholder]="'Town'">
+                            <mat-error>
+                                Please type in the town where this property is located
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Suburb</mat-label>
+                            <input matInput name="suburb" ngModel required [placeholder]="'Suburb'">
+                            <mat-error>
+                                In which suburb is your property at?
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Area name</mat-label>
+                            <input matInput name="areaName" ngModel required [placeholder]="'Area name'">
+                            <mat-error>
+                                What's the area name where this property is located?
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Street</mat-label>
+                            <input matInput name="street" ngModel required
+                                [placeholder]="'House name/number + street/road'">
+                            <mat-error>
+                                Enter the street address of this property
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="fuse-mat-textarea flex-auto">
+                            <mat-label>Provide us with additional location information</mat-label>
+                            <textarea matInput name="additionalInfo" ngModel
+                                [placeholder]="'Includes nearby road, land marks. e.g  The apartment is located 200m from Waiyaki way behind Tuskys supermarket'"
+                                [rows]="3"></textarea>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex-auto min-w-64">
+                        <div class="flex flex-col mt-8">
+                            <span class="font-semibold mb-2">Is your property located where you are right now?</span>
+                            <mat-radio-group required class="flex flex-col" [color]="'primary'">
+                                <mat-radio-button class="mb-2" value="true"
+                                    (change)="getGeoLocation()">
+                                    Yes, I am at the location of the property right now.
+                                </mat-radio-button>
+                                <mat-radio-button class="mb-2" value="false">
+                                    No, I am not at the location of the property.
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                    <div class="flex-auto min-w-64">
+                        <div class="flex flex-col mt-8">
+                            <span class="font-semibold mb-2">Trace the location of your property on the map and click on it to update</span>
+                            <div id="map"></div>
+                        </div>
+                        <div class="flex-auto min-w-64">
+                            <div class="flex flex-col mt-8">
+                                <div class="flex">
+                                    <mat-form-field class="flex-auto">
+                                        <mat-label>Longitude</mat-label>
+                                        <input matInput required name="long" [(ngModel)]="longitude" [placeholder]="'Longitude'"
+                                            (change)=cordinateChanged($event)>
+                                        <mat-error>
+                                            The longitude is missing. Click on the exact location of your property in the map
+                                            above to update
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div class="flex">
+                                    <mat-form-field class="flex-auto">
+                                        <mat-label>Latitude</mat-label>
+                                        <input matInput required name="lat" [(ngModel)]="latitude" [placeholder]="'Latitude'"
+                                            (change)=cordinateChanged($event)>
+                                        <mat-error>
+                                            The latitude is missing. Click on the exact location of your property in the map
+                                            above to update
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('generalFeatures','propertyLocation')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" type="submit" mat-flat-button [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add propery photos -->
+            <form id="propertyPhotos" #propertyPhotos="ngForm" enctype="multipart/form-data" hidden
+                (ngSubmit)="onSubmitPropertyPhotos(propertyPhotos)">
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Property photos</p>
+                    <p class="text-secondary">
+                        Upload photos of the building in general and it's surrounding
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="dropzone" appDnd (fileDropped)="onPropertyFileDropped($event)">
+                        <input type="file" #fileDropRef id="fileDropRef" multiple
+                            (change)="propertyFilesHandler($event.target.files)">
+                        <button mat-button type="button" [color]="'primary'" class="mt-11">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cloud-upload-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M8 0a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 4.095 0 5.555 0 7.318 0 9.366 1.708 11 3.781 11H7.5V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11h4.188C14.502 11 16 9.57 16 7.773c0-1.636-1.242-2.969-2.834-3.194C12.923 1.999 10.69 0 8 0zm-.5 14.5V11h1v3.5a.5.5 0 0 1-1 0z"/>
+                          </svg>
+                          Upload photos
+                        </button>
+                        <div class="text-opacity-25">or drag them in</div>
+                    </div>
+                    <div class="photos">
+                    <div *ngFor="let file of pPhotos; let i = index" style="position: relative;">
+                        <img [src]="file.readImage" height="200px" width="100%" (click)="openPropertyPhoto(propertyPhotoModal, i)"
+                        style="cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+                        fill="white" class="bi bi-trash-fill delete" viewBox="0 0 16 16"
+                        (click)="deletePropertyPhoto(i)">
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                        </svg>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('propertyLocation','propertyPhotos')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" type="submit" mat-flat-button [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+            </form>
+
+            <!-- Add propery room types -->
+            <div id="roomType" #roomType hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Room type</p>
+                    <p class="text-secondary">
+                        Select a unit that is available in your property
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+
+                    <div class="flex flex-wrap items-start justify-between w-full">
+
+                        <!-- Single Room Card -->
+                        <fuse-card
+                            class="flex items-center justify-between max-w-80 w-full mt-4 p-6 filter-info cursor-pointer"
+                            (click)="saveRoomType('single')">
+                            <div class="flex flex-col">
+                                <div class="text-2xl font-semibold leading-tight">Single rooms</div>
+                                <div class="text-md text-secondary">One room</div>
+                            </div>
+                        </fuse-card>
+
+                        <!-- Bedsitter Card -->
+                        <fuse-card
+                            class="flex items-center justify-between max-w-80 w-full mt-4 p-6 filter-info cursor-pointer"
+                            (click)="saveRoomType('bedsitter')">
+                            <div class="flex flex-col">
+                                <div class="text-2xl font-semibold leading-tight">Bedsitters</div>
+                                <div class="text-md text-secondary">A room which a bathroom and toilet</div>
+                            </div>
+                        </fuse-card>
+
+                        <!-- Bedroom Card -->
+                        <fuse-card
+                            class="flex items-center justify-between max-w-80 w-full mt-4 p-6 filter-info cursor-pointer"
+                            (click)="selectedBedrooms = !selectedBedrooms">
+                            <div class="flex flex-col">
+                                <div class="text-2xl font-semibold leading-tight">Bedrooms</div>
+                                <div class="text-md text-secondary">One bedroom or more are available for rent</div>
+                            </div>
+                        </fuse-card>
+
+                    </div>
+                    <div class="grid">
+                        <ng-container *ngIf="selectedBedrooms">
+                            <ng-container *ngTemplateOutlet="bedroomsDetailsTemplate"></ng-container>
+                        </ng-container>
+                    </div>
+
+                    <ng-template #bedroomsDetailsTemplate>
+                        <div class="shadow-lg overflow-hidden mt-4">
+                            <div class="flex border-b">
+                                <form class="flex flex-col w-full" #bedroomedDetails="ngForm"
+                                    (ngSubmit)="onSubmitBedroomedDetails(bedroomedDetails)">
+
+                                    <div class="flex flex-col sm:flex-row p-8">
+
+                                        <div class="flex flex-auto flex-wrap">
+                                            <div class="flex flex-col w-full lg:w-2/4 sm:pl-8">
+
+                                                <!-- Bedrooms -->
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Bedrooms</mat-label>
+                                                    <input matInput type="number" name="bedrooms" ngModel required>
+                                                    <mat-error>
+                                                        Please type in the number of bedrooms available
+                                                    </mat-error>
+                                                </mat-form-field>
+
+                                                <!-- Bathrooms -->
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Bathrooms</mat-label>
+                                                    <input matInput type="number" name="bathrooms" ngModel required>
+                                                    <mat-error>
+                                                        Please type in the number of bathrooms available
+                                                    </mat-error>
+                                                </mat-form-field>
+
+                                                <!-- Kitchens -->
+                                                <mat-form-field class="w-full">
+                                                    <mat-label>Kitchens</mat-label>
+                                                    <input matInput type="number" name="kitchens" ngModel required>
+                                                    <mat-error>
+                                                        Please type in the number of kitchens available
+                                                    </mat-error>
+                                                </mat-form-field>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="flex items-center justify-between w-full border-t px-8 py-4">
+                                        <div class="flex items-center">
+                                            <button mat-flat-button [color]="'primary'" type="submit">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </ng-template>
+
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('propertyPhotos','roomType')">
+                        Back
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Add listing detail -->
+            <form id="listingDetails" #listingDetails="ngForm" (ngSubmit)="onSubmitListingDetails(listingDetails)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">{{ roomTypeDTO?.name }} details</p>
+                    <p class="text-secondary">
+                        Tell us more about the unit type you just selected
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>What's the total number of units to rent?</mat-label>
+                            <input matInput type="number" 
+                                name="totalUnits" ngModel required
+                                [placeholder]="'Total number of units in property'">
+                            <mat-error>
+                                Enter the total rentable units in the property
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>How many units are currently available for people to rent?</mat-label>
+                            <input matInput type="number"
+                                name="unitsAvailable" ngModel required
+                                [placeholder]="'Number of units available for people to rent'">
+                            <mat-error>
+                                Enter the units currently available for renting
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="fuse-mat-textarea flex-auto">
+                            <mat-label>Description</mat-label>
+                            <textarea matInput ngModel required
+                                name="description"
+                                [placeholder]="'You can provide a short description concerning this listing'"
+                                [rows]="3"></textarea>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                            <mat-error>
+                                Give a short description about this {{ roomTypeDTO?.name }}.
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('roomType','listingDetails')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" mat-flat-button 
+                        type="submit"
+                        [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add listing features -->
+            <form id="listingFeatures" #listingFeatures="ngForm" (ngSubmit)="onSubmitListingFeatures(listingFeatures)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Listing features</p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex">
+                        <mat-form-field class="fuse-mat-textarea flex-auto">
+                            <mat-label>External features</mat-label>
+                            <textarea matInput
+                                name="externalFeatures" ngModel
+                                [placeholder]="'E.g: Balcony, swimming pool, etc. Seperate the features with a comma(,)'"
+                                [rows]="3">
+                            </textarea>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="fuse-mat-textarea flex-auto">
+                            <mat-label>Internal features</mat-label>
+                            <textarea matInput
+                                name="internalFeatures" ngModel
+                                [placeholder]="'E.g: Hot shower, wifi/ethernet, furniture, etc. Seperate the features with a comma(,)'"
+                                [rows]="3">
+                            </textarea>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('listingDetails','listingFeatures')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" mat-flat-button 
+                        type="submit"
+                        [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add listing photos -->
+            <form id="listingPhotos" #listingPhotos="ngForm" enctype="multipart/form-data"(ngSubmit)="onSubmitListingPhotos(listingPhotos)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Listing photos</p>
+                    <p class="text-secondary">
+                        Let's liven up this listing with some photos
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="dropzone" appDnd (fileDropped)="onListingFileDropped($event)">
+                        <input type="file" #fileDropRef id="fileDropRef" multiple
+                            (change)="listingFilesHandler($event.target.files)">
+                        <button mat-button type="button" [color]="'primary'" class="mt-11">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cloud-upload-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M8 0a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 4.095 0 5.555 0 7.318 0 9.366 1.708 11 3.781 11H7.5V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11h4.188C14.502 11 16 9.57 16 7.773c0-1.636-1.242-2.969-2.834-3.194C12.923 1.999 10.69 0 8 0zm-.5 14.5V11h1v3.5a.5.5 0 0 1-1 0z"/>
+                          </svg>
+                          Upload photos
+                        </button>
+                        <div class="text-opacity-25">or drag them in</div>
+                    </div>
+                    <div class="photos">
+                    <div *ngFor="let file of lPhotos; let i = index" style="position: relative;">
+                        <img [src]="file.readImage" height="200px" width="100%" (click)="openListingPhoto(listingPhotoModal, i)" style="cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+                            fill="white" class="bi bi-trash-fill delete" viewBox="0 0 16 16"
+                            (click)="deleteListingPhoto(i)">
+                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                        </svg>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('listingFeatures','listingPhotos')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" mat-flat-button 
+                        type="submit"
+                        [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add rent price -->
+            <div id="rentPrice" #rentPrice hidden>
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Rent price</p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex-auto min-w-64">
+                        <div class="flex flex-col mt-8">
+                            <span class="font-semibold mb-2">Is the rent cost of this unit a fixed rental cost or does it vary?</span>
+                            <mat-radio-group 
+                                class="flex flex-col"
+                                [color]="'primary'"
+                                name="exactAmount"
+                                [(ngModel)]="exactRentCost">
+                                <mat-radio-button class="mb-2" [value]="true">
+                                    Yes, it is a fixed cost
+                                </mat-radio-button>
+                                <mat-radio-button class="mb-2" [value]="false">
+                                    No, it varies and there is a minimum and maximum price
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+
+                    <!-- Rent price -->
+                    <form #rentPrice="ngForm" *ngIf="exactRentCost" (ngSubmit)="onSubmitRentPrice(rentPrice)">
+
+                        <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                            <div class="flex">
+                                <mat-form-field class="flex-auto">
+                                    <mat-label>Rent Price</mat-label>
+                                    <input matInput type="number" name="exactAmount" ngModel required>
+                                    <mat-error>
+                                        Enter the monthly rent fee for this listing (no commas)
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end mt-10">
+                            <button mat-button type="button"
+                                (click)="showHideElement('listingPhotos','rentPrice')">
+                                Back
+                            </button>
+                            <button class="px-6 ml-3" mat-flat-button 
+                                type="submit"
+                                [color]="'primary'">
+                                Next
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <!-- Range rent price -->
+                    <form #rangeRentPrice="ngForm" *ngIf="!exactRentCost && exactRentCost !== undefined" 
+                        (ngSubmit)="onSubmitRentPrice(rangeRentPrice)">
+
+                        <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                            <div class="flex">
+                                <mat-form-field class="flex-auto">
+                                    <mat-label>Minimum Rent Price</mat-label>
+                                    <input matInput type="number" name="minAmount" ngModel required>
+                                    <mat-error>
+                                        Enter the minimum price to rent this unit
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="flex">
+                                <mat-form-field class="flex-auto">
+                                    <mat-label>Maximum Rent Price</mat-label>
+                                    <input matInput type="number" name="maxAmount" ngModel required>
+                                    <mat-error>
+                                        Enter the maximum price to rent this unit
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end mt-10">
+                            <button mat-button type="button"
+                                (click)="showHideElement('listingPhotos','rentPrice')">
+                                Back
+                            </button>
+                            <button class="px-6 ml-3" mat-flat-button 
+                                type="submit"
+                                [color]="'primary'">
+                                Next
+                            </button>
+                        </div>
+        
+                    </form>
+
+                </div>
+            </div>
+
+            <!-- Add electricity cost -->
+            <form id="electricityCost" #electricityCost="ngForm" (ngSubmit)="onSubmitElectricityCost(electricityCost)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Electricity cost</p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Electricity installation type</mat-label>
+                            <mat-select 
+                                name="electricityInstallationTypeId" 
+                                [(ngModel)]="selectedElectricityInstallationTypeId" 
+                                required>
+                                <mat-option *ngFor="let type of electricityInstallationTypes" [value]="type?.id">
+                                    {{ type.name }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:location-marker'">
+                            </mat-icon>
+                            <mat-error>
+                                Please which electricity installation type you have
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Electricity cost</mat-label>
+                            <input matInput ngModel
+                                name="fixedAmount"
+                                type="number" 
+                                [placeholder]="'Electricity fixed cost'">
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('rentPrice','electricityCost')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" mat-flat-button 
+                        type="submit"
+                        [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add water cost -->
+            <form id="waterCost" #waterCost="ngForm" (ngSubmit)="onSubmitWaterCost(waterCost)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Water cost</p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>Water availability type</mat-label>
+                            <mat-select required
+                                name="waterAvailabilityTypeId"
+                                (change)="selectedWaterAvailabilityTypeChanged()"
+                                [(ngModel)]="selectedWaterAvailabilityTypeId">
+                                <mat-option *ngFor="let type of waterAvailabilityTypes" [value]="type?.id">
+                                    {{ type.name }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:location-marker'">
+                            </mat-icon>
+                            <mat-error>
+                                Please tell us of the availability of water
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>How many times is water available in a month?</mat-label>
+                            <input matInput type="number" name="frequencyPerMonth" ngModel>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>What is the monthly cost of water?</mat-label>
+                            <input matInput type="number" name="fixedAmount" ngModel>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>What is the price per unit of water?</mat-label>
+                            <input matInput type="number" name="pricePerUnit" ngModel required>
+                            <mat-error>
+                                Please tell the price per unit of water
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex">
+                        <mat-form-field class="flex-auto">
+                            <mat-label>What is the size of a unit of water in litres?</mat-label>
+                            <input matInput type="number" name="unitSizeInLitres" ngModel required>
+                            <mat-error>
+                                Please tell the quantity of a unit of water
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('electricityCost','waterCost')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" mat-flat-button 
+                        type="submit"
+                        [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add additional cost -->
+            <form id="additionalCost" #additionalCost="ngForm" (ngSubmit)="onSubmitAdditionalCost(additionalCost)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Additional costs</p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex-auto min-w-64">
+                        <div class="flex flex-col mt-8">
+                            <span class="font-semibold mb-2">Are there any other additional costs before renting?</span>
+                            <mat-radio-group 
+                                class="flex flex-col" 
+                                [color]="'primary'"
+                                name="hasAdditionalCosts"
+                                [(ngModel)]="hasAdditionalCosts">
+                                <mat-radio-button class="mb-2" [value]="true">
+                                    Yes, there are other costs
+                                </mat-radio-button>
+                                <mat-radio-button class="mb-2" [value]="false">
+                                    No, there are no other costs
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                    <div *ngIf="hasAdditionalCosts">
+                        <div *ngFor="let c of extraCosts; let i = index">
+                            <div class="flex">
+                                <mat-form-field class="flex-auto">
+                                    <mat-label>Name of item with additional cost</mat-label>
+                                    <input matInput 
+                                        name="item_{{i}}" ngModel required
+                                        [placeholder]="'Name of item with additional cost'">
+                                    <mat-error>
+                                        Enter the name of the additional cost
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="flex">
+                                <mat-form-field class="flex-auto">
+                                    <mat-label>Amount</mat-label>
+                                    <input matInput type="number" name="amount_{{i}}" ngModel required>
+                                    <mat-error>
+                                        Enter the amount of the additional cost
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="flex">
+                                <mat-form-field class="fuse-mat-textarea flex-auto">
+                                    <mat-label>Description</mat-label>
+                                    <textarea matInput ngModel
+                                        name="description_{{i}}"
+                                        [placeholder]="'Provide a brief description of this additional cost'"
+                                        [rows]="3">
+                                    </textarea>
+                                    <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                                </mat-form-field>
+                            </div>
+                            <div class="flex-auto min-w-64">
+                                <div class="flex flex-col mt-8">
+                                    <span class="font-semibold mb-2">Is this amount an approximate?</span>
+                                    <mat-radio-group ngModel
+                                        class="flex flex-col"
+                                        [color]="'primary'" 
+                                        name="amountIsApproximate_{{i}}">
+                                        <mat-radio-button class="mb-2" [value]="true">
+                                            Yes, it is an approximate cost
+                                        </mat-radio-button>
+                                        <mat-radio-button class="mb-2" [value]="false">
+                                            No, it is the exact cost
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </div>
+                            </div>
+                            <button 
+                                class="px-6 ml-3"
+                                mat-button
+                                type="button"
+                                [color]="'primary'"
+                                (click)="addAdditionalCost()">
+                                Add another item
+                            </button>
+                        </div>
+                    </div>    
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('waterCost','additionalCost')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" mat-flat-button 
+                        type="submit"
+                        [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add booking costs -->
+            <form id="bookingCosts" #bookingCosts="ngForm" (ngSubmit)="onSubmitBookingCosts(bookingCosts)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Moving in costs</p>
+                    <p class="text-secondary">
+                        Please check and add all costs that the tenant is going to incur and pay for before moving in
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex flex-col">
+                        <span class="font-semibold mb-2">Please check and add all costs that the tenant is going to
+                            incur and pay for before moving in</span>
+                        <div class="flex flex-col">
+                            <mat-checkbox class="mb-2" [color]="'primary'">
+                                Rental cost
+                            </mat-checkbox>
+                            <mat-checkbox class="mb-2" [color]="'primary'">
+                                Water cost
+                            </mat-checkbox>
+                            <mat-checkbox class="mb-2" [color]="'primary'">
+                                Electricity cost
+                            </mat-checkbox>
+                            <mat-checkbox class="mb-2" [color]="'primary'">
+                                Additional cost
+                            </mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('additionalCost','bookingCosts')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" mat-flat-button 
+                        type="submit"
+                        [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Add booking -->
+            <form id="booking" #booking="ngForm" (ngSubmit)="onSubmitBooking(booking)" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Booking</p>
+                    <p class="text-secondary">
+                        A potential tenant might want to book this listing in advance. We will receive the payment
+                        and disburse the payment to you once the tenant is ready to move in.
+                    </p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <div class="flex-auto min-w-64">
+                        <div class="flex flex-col mt-8">
+                            <span class="font-semibold mb-2">Would you like us to receive the payment for the initial
+                                booking for this listing?</span>
+                            <mat-radio-group ngModel required
+                                class="flex flex-col"
+                                [color]="'primary'"
+                                name="canReceivePayment">
+                                <mat-radio-button class="mb-2" [value]="true">
+                                    Yes
+                                </mat-radio-button>
+                                <mat-radio-button class="mb-2" [value]="false">
+                                    No
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-10">
+                    <button mat-button type="button"
+                        (click)="showHideElement('bookingCosts','booking')">
+                        Back
+                    </button>
+                    <button class="px-6 ml-3" mat-flat-button 
+                        type="submit"
+                        [color]="'primary'">
+                        Next
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Done -->
+            <form id="done" #booking="ngForm" hidden>
+
+                <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                    <p class="text-lg font-medium">Well Done!</p>
+                    <mat-divider class="mt-8 mb-10"></mat-divider>
+                    <h2>Your listing is now published</h2>
+
+                    <div class="flex items-center justify-end mt-10">
+                        <button 
+                            class="px-6 ml-3" 
+                            type="button"
+                            mat-flat-button
+                            [color]="'primary'"
+                            routerLink="/p/list">
+                            Finish
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+<ng-template #propertyPhotoModal let-modal>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="modal-body">
+      <img src="{{photo.readImage}}" alt="">
+      <div class="pic-buttons">
+        <button type="button" style="float: left;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" 
+            class="bi bi-caret-left-fill" viewBox="0 0 16 16"
+            *ngIf="showLeft" (click)="showPropertyPreviousPhoto()">
+            <path d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+          </svg>
+        </button>
+        <button type="button" style="float: right;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" 
+            class="bi bi-caret-right-fill" viewBox="0 0 16 16"
+            *ngIf="showRight" (click)="showPropertyNextPhoto()">
+            <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="deletePropertyPhoto('Declared')">Save</button>
+    </div>
+  </ng-template>
+  <ng-template #listingPhotoModal let-modal>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="modal-body">
+      <img src="{{photo.readImage}}" alt="">
+      <div class="pic-buttons">
+        <button type="button" style="float: left;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" 
+            class="bi bi-caret-left-fill" viewBox="0 0 16 16"
+            *ngIf="showLeft" (click)="showListingPreviousPhoto()">
+            <path d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+          </svg>
+        </button>
+        <button type="button" style="float: right;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" 
+            class="bi bi-caret-right-fill" viewBox="0 0 16 16"
+            *ngIf="showRight" (click)="showListingNextPhoto()">
+            <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="deleteListingPhoto('Declared')">Save</button>
+    </div>
+  </ng-template>

@@ -1,0 +1,162 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+  <!-- Header -->
+  <div
+      class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+      <div class="flex-1 min-w-0">
+
+          <!-- Breadcrumbs -->
+          <div class="flex flex-wrap items-center font-medium">
+            <div>
+                <a class="whitespace-nowrap text-primary-500" routerLink="/p/list">Properties</a>
+            </div>
+            <div class="flex items-center ml-1 whitespace-nowrap">
+                <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                <a class="whitespace-nowrap text-primary-500" routerLink="/p/{{property?.id}}">{{ property?.name }}</a>
+            </div>
+            <div class="flex items-center ml-1 whitespace-nowrap">
+                <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                <a class="ml-1 text-primary-500">{{ property?.name }} location</a>
+            </div>
+          </div>
+  
+          <!-- Title -->
+          <div class="mt-2">
+              <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                {{ property?.name }} location
+              </h2>
+          </div>
+      </div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-auto p-6 sm:p-10">
+
+      <div class="max-w-3xl">
+
+          <!-- Alert -->
+          <fuse-alert class="mt-8 -mb-4" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false"
+              [type]="alert.type" [@shake]="alert.type === 'error'">
+              {{alert.message}}
+          </fuse-alert>
+
+            <!-- Property location -->
+            <form #propertyLocation="ngForm" (ngSubmit)="onSubmit(propertyLocation)">
+
+              <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>County</mat-label>
+                          <mat-select name="countyId" [(ngModel)]="selectedCountyId" required>
+                              <mat-option *ngFor="let county of counties" [value]="county?.id">
+                                  {{ county.name }}
+                              </mat-option>
+                          </mat-select>
+                          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:location-marker'">
+                          </mat-icon>
+                          <mat-error>
+                              Please select the county where this property is located
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>Town</mat-label>
+                          <input matInput required
+                            name="town"
+                            [ngModel]="location?.town"
+                            [placeholder]="'Town'">
+                          <mat-error>
+                              Please type in the town where this property is located
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>Suburb</mat-label>
+                          <input matInput required
+                            name="suburb"
+                            [ngModel]="location?.suburb"
+                            [placeholder]="'Suburb'">
+                          <mat-error>
+                              In which suburb is your property at?
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>Area name</mat-label>
+                          <input matInput required
+                            name="areaName"
+                            [ngModel]="location?.areaName"
+                            [placeholder]="'Area name'">
+                          <mat-error>
+                              What's the area name where this property is located?
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>Street</mat-label>
+                          <input matInput required
+                              name="street" 
+                              [ngModel]="location?.street"
+                              [placeholder]="'House name/number + street/road'">
+                          <mat-error>
+                              Enter the street address of this property
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+                  <div class="flex">
+                      <mat-form-field class="fuse-mat-textarea flex-auto">
+                          <mat-label>Additional information</mat-label>
+                          <textarea matInput
+                              name="additionalInfo"
+                              [ngModel]="location?.additionalInfo"
+                              [placeholder]="'Includes nearby road, land marks. e.g  The apartment is located 200m from Waiyaki way behind Tuskys supermarket'"
+                              [rows]="3"></textarea>
+                          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:menu-alt-2'"></mat-icon>
+                      </mat-form-field>
+                  </div>
+                  <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Longitude</mat-label>
+                        <input matInput required id="long" #long name="long" [(ngModel)]="longitude" [placeholder]="'Longitude'"
+                            (change)=cordinateChanged($event)>
+                        <mat-error>
+                            The longitude is missing. Click on the exact location of your property in the map
+                            above to update
+                        </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Latitude</mat-label>
+                        <input matInput required id="lat" #lat name="lat" [(ngModel)]="latitude" [placeholder]="'Latitude'"
+                            (change)=cordinateChanged($event)>
+                        <mat-error>
+                            The latitude is missing. Click on the exact location of your property in the map
+                            above to update
+                        </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="flex-auto min-w-64">
+                      <div class="flex flex-col mt-8">
+                          <span class="font-semibold mb-2">Trace the location of your property on the map and click on it to update</span>
+                          <div id="map" class="h-96"></div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="flex items-center justify-end mt-10">
+                <button class="px-6 ml-3" mat-flat-button type="submit" [color]="'primary'">
+                    Save
+                </button>
+              </div>
+
+          </form>
+
+      </div>
+
+  </div>
+</div>

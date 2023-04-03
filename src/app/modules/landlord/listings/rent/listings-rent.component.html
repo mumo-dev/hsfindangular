@@ -1,0 +1,89 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+  <!-- Header -->
+  <div
+      class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+      <div class="flex-1 min-w-0">
+          <!-- Breadcrumbs -->
+          <div class="flex flex-wrap items-center font-medium">
+              <div>
+                  <a class="whitespace-nowrap text-primary-500" routerLink="/p/list">Properties</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                  <a class="whitespace-nowrap text-primary-500" routerLink="/p/{{property?.id}}">{{ property?.name }}</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                  <a class="ml-1 text-primary-500" routerLink="/l/{{listingId}}/edit">{{ listing?.roomTypeDTO.name }}</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                  <a class="ml-1 text-primary-500">{{ listing?.roomTypeDTO.name }} Rent</a>
+              </div>
+          </div>
+          <!-- Title and action buttons -->
+          <div class="flex items-center justify-between w-full">
+            <div class="mt-2">
+                <h2 class="text-3xl font-semibold tracking-tight leading-8">{{ listing?.roomTypeDTO.name }} Rent</h2>
+            </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-auto p-6 sm:p-10">
+
+      <div class="max-w-3xl">
+
+          <!-- Alert -->
+          <fuse-alert class="mt-8 -mb-4" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false"
+              [type]="alert.type" [@shake]="alert.type === 'error'">
+              {{alert.message}}
+          </fuse-alert>
+
+          <!-- Rent price -->
+          <form #rentPrice="ngForm" (ngSubmit)="onSubmit(rentPrice)">
+
+              <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                  <div class="flex">
+                    <mat-form-field class="flex-auto">
+                        <mat-label>Rent Price</mat-label>
+                        <input matInput type="number" name="exactAmount" [ngModel]="rentalCost?.exactAmount">
+                        <mat-error>
+                            Enter the monthly rent fee for this listing (no commas)
+                        </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>Minimum Rent Price</mat-label>
+                          <input matInput type="number" name="minAmount" [ngModel]="rentalCost?.minAmount">
+                          <mat-error>
+                              Enter the minimum price to rent this unit
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+                  <div class="flex">
+                      <mat-form-field class="flex-auto">
+                          <mat-label>Maximum Rent Price</mat-label>
+                          <input matInput type="number" name="maxAmount" [ngModel]="rentalCost?.maxAmount">
+                          <mat-error>
+                              Enter the maximum price to rent this unit
+                          </mat-error>
+                      </mat-form-field>
+                  </div>
+              </div>
+
+              <div class="flex items-center justify-end mt-10">
+                <button class="px-6 ml-3" mat-flat-button type="submit" [color]="'primary'">
+                    Save
+                </button>
+              </div>
+
+          </form>
+
+      </div>
+
+  </div>
+</div>

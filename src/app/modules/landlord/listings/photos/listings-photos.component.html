@@ -1,0 +1,111 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+  <!-- Header -->
+  <div
+      class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+      <div class="flex-1 min-w-0">
+          <!-- Breadcrumbs -->
+          <div class="flex flex-wrap items-center font-medium">
+              <div>
+                  <a class="whitespace-nowrap text-primary-500" routerLink="/p/list">Properties</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                  <a class="whitespace-nowrap text-primary-500" routerLink="/p/{{property?.id}}">{{ property?.name }}</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                  <a class="ml-1 text-primary-500" routerLink="/l/{{listingId}}/edit">{{ listing?.roomTypeDTO.name }}</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_solid:chevron-right'"></mat-icon>
+                  <a class="ml-1 text-primary-500">{{ listing?.roomTypeDTO.name }} Photos</a>
+              </div>
+          </div>
+          <!-- Title -->
+          <div class="mt-2">
+              <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                  {{ listing?.roomTypeDTO.name }} photos
+              </h2>
+          </div>
+      </div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-auto p-6 sm:p-10">
+
+      <div class="max-w-3xl">
+
+          <!-- Alert -->
+          <fuse-alert class="mt-8 -mb-4" *ngIf="showAlert" [appearance]="'outline'" [showIcon]="false"
+              [type]="alert.type" [@shake]="alert.type === 'error'">
+              {{alert.message}}
+          </fuse-alert>
+
+          <mat-accordion class="example-headers-align" multi>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                      Add Photos
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+            
+                <!-- Propery photos -->
+                <form #listingPhotos="ngForm" enctype="multipart/form-data" (ngSubmit)="onSubmit(listingPhotos)">
+
+                    <div class="flex flex-col mt-8 p-8 pb-5 bg-card rounded shadow overflow-hidden">
+                        <p class="text-lg font-medium">Listing photos</p>
+                        <p class="text-secondary">
+                          Let's liven up this {{ listing?.roomTypeDTO.name }} with some photos
+                        </p>
+                        <mat-divider class="mt-8 mb-10"></mat-divider>
+                        <div class="dropzone" appDnd (fileDropped)="onFileDropped($event)">
+                            <input type="file" #fileDropRef id="fileDropRef" multiple
+                                (change)="filesHandler($event.target.files)">
+                            <button mat-button type="button" [color]="'primary'" class="mt-11">
+                              <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cloud-upload-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M8 0a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 4.095 0 5.555 0 7.318 0 9.366 1.708 11 3.781 11H7.5V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11h4.188C14.502 11 16 9.57 16 7.773c0-1.636-1.242-2.969-2.834-3.194C12.923 1.999 10.69 0 8 0zm-.5 14.5V11h1v3.5a.5.5 0 0 1-1 0z"/>
+                              </svg>
+                              Upload photos
+                            </button>
+                            <div class="text-opacity-25">or drag them in</div>
+                        </div>
+                        <div class="photos" *ngIf="newPhotos.length > 0">
+                            <div *ngFor="let file of newPhotos; let i = index" style="position: relative;">
+                                <img [src]="file.readImage" height="200px" width="100%" style="cursor: pointer;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" 
+                                    fill="white" class="bi bi-trash-fill delete" viewBox="0 0 16 16"
+                                    (click)="deletePhoto(i)">
+                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end mt-10">
+                        <button class="px-6 ml-3" type="submit" mat-flat-button [color]="'primary'">
+                            Save
+                        </button>
+                    </div>
+                </form> 
+            
+              </mat-expansion-panel>
+            </mat-accordion >
+            
+            <div class="flex flex-wrap items-start w-full max-w-400 mt-4">
+
+              <!-- Card #1 -->
+              <fuse-card class="flex flex-col max-w-80 w-full filter-article"
+                *ngFor="let photo of photos; let i = index">
+                  <img
+                      class="object-cover"
+                      src="{{photo}}"
+                      alt="{{photo}}">
+              </fuse-card>
+
+          </div>
+  
+      </div>
+
+  </div>
+</div>
